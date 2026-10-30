@@ -44,9 +44,7 @@ Screenshots of the workflow, node configurations, and execution results are avai
 7. Activate the workflow.
 8. Receive weather notifications through Telegram.
 
-## 🌐 API Reference
 
-Open-Meteo Weather API: https://open-meteo.com/
 
 ## 👩‍💻 Author
 

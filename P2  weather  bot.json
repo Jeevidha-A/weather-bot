@@ -1,0 +1,198 @@
+{
+  "name": "P2  weather  bot",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "triggerAtHour": 7
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.4,
+      "position": [
+        0,
+        0
+      ],
+      "id": "6b6a5b9f-4cb7-4cfc-9eef-d4f76de5ecbe",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "621d3305-a2f6-4aaa-aeb7-1aef1fba32af",
+              "name": "Build message",
+              "value": "=Good morning! Chennai weather for {{ $now.toFormat('dd LLL yyyy') }} Now: {{ $json.current.temperature_2m }}°C, humidity  {{ $json.current.relative_humidity_2m }}%, wind {{ $json.current.wind_speed_10m }} km/h Today: {{ $json.daily.temperature_2m_min[0] }}°C to  {{ $json.daily.temperature_2m_max[0] }}°C Rain chance: {{ $json.daily.precipitation_probability_max[0] }}% {{ $json.daily.precipitation_probability_max[0] > 50 ? 'Carry an umbrella!' : 'No  umbrella needed.' }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.5,
+      "position": [
+        448,
+        0
+      ],
+      "id": "b23390d3-cd36-49b5-81cc-2b51d1c18d29",
+      "name": "Build Message"
+    },
+    {
+      "parameters": {
+        "sendTo": "jeevidha08bca@gmail.com",
+        "subject": "weather",
+        "emailType": "text",
+        "message": "={{ $json['Build message'] }}",
+        "options": {
+          "appendAttribution": true
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        672,
+        0
+      ],
+      "id": "e2ec48c3-9150-423b-b633-0a9bcb3180b4",
+      "name": "Send a message",
+      "webhookId": "dda92f7e-fb32-41ee-973a-d8e3648c13c6",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "MZRdCDvf3pk6eIhY",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "8706752453",
+        "text": "={{ $('Build Message').item.json['Build message'] }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        896,
+        0
+      ],
+      "id": "b525552a-f58a-4c62-9a56-b2250acc2c73",
+      "name": "Send a text message",
+      "webhookId": "715435c2-346f-4cb6-9943-b66bcee25694",
+      "credentials": {
+        "telegramApi": {
+          "id": "kR7T8AC1p79pEEhk",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "https://api.open-meteo.com/v1/forecast",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "latitude",
+              "value": "13.08"
+            },
+            {
+              "name": "longitude",
+              "value": "80.27"
+            },
+            {
+              "name": "temperature",
+              "value": "temperature_2m,relative_humidity2m,wind_speed_10m"
+            },
+            {
+              "name": "daily",
+              "value": "temperature_2m_max,temperature_2m_min,precipitation_probability_max"
+            },
+            {
+              "name": "timezone",
+              "value": "Asia/Kolkata"
+            },
+            {
+              "name": "forecast_days",
+              "value": "1"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.5,
+      "position": [
+        224,
+        0
+      ],
+      "id": "54786297-1f52-4af8-a9e9-fef6a6d08bad",
+      "name": "HTTP Request"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build Message": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send a message": {
+      "main": [
+        [
+          {
+            "node": "Send a text message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "Build Message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "fce2d205-77d9-4fae-bd0f-977feae7bbfc",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "cb9d5951676e0d3a315561310c5f797ea0ba497e1c72f191f0b05f7b39f713a9"
+  },
+  "nodeGroups": [],
+  "id": "ZOGm2uPDmDLfQLjQ",
+  "tags": []
+}
